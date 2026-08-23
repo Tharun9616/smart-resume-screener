@@ -1,0 +1,18 @@
+Job Title: Backend Engineer (Python)
+
+We are looking for a Backend Engineer to join our platform team. You will
+design and build scalable APIs, work closely with data scientists to deploy
+ML/LLM-powered features, and own services from design through production.
+
+Requirements:
+- 3+ years of professional software engineering experience
+- Strong proficiency in Python; experience with FastAPI or Django
+- Experience with SQL databases (PostgreSQL preferred)
+- Familiarity with Docker and cloud platforms (AWS or GCP)
+- Experience integrating third-party or LLM APIs is a strong plus
+- Bachelor's degree in Computer Science or related field (or equivalent experience)
+- Comfortable working in an agile team with CI/CD pipelines
+
+Nice to have:
+- Experience with vector databases or semantic search
+- Prior experience building recruiting/HR tech or data pipelines

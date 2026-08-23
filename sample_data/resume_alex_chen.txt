@@ -1,0 +1,14 @@
+Alex Chen
+alex.chen@email.com | Toronto, Canada
+
+EDUCATION
+B.A. in Graphic Design, York University, 2015-2019
+
+EXPERIENCE
+Frontend Developer, PixelCraft Studio (2019-Present)
+- Built marketing websites using HTML, CSS, JavaScript and React
+- Worked with designers to implement Tailwind-based component libraries
+- Some exposure to Node.js for small backend scripts
+
+SKILLS
+HTML, CSS, JavaScript, React, Tailwind, Figma, Node.js

@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Smart Resume Screener</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#11141B;
+    --panel:#181C25;
+    --panel-2:#1F2430;
+    --line:#2A3040;
+    --text:#E7E9EE;
+    --muted:#8A90A0;
+    --amber:#E8A33D;
+    --amber-dim:#4A3A22;
+    --good:#4ADE80;
+    --mid:#E8A33D;
+    --low:#F0654F;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--ink);
+    color:var(--text);
+    font-family:'Archivo',system-ui,sans-serif;
+    min-height:100vh;
+  }
+  .wrap{max-width:1080px;margin:0 auto;padding:40px 24px 80px;}
+  header{
+    display:flex;justify-content:space-between;align-items:flex-end;
+    border-bottom:1px solid var(--line);padding-bottom:20px;margin-bottom:32px;
+  }
+  .brand{display:flex;align-items:baseline;gap:12px;}
+  .brand .mark{
+    font-family:'IBM Plex Mono',monospace;color:var(--amber);
+    font-size:13px;letter-spacing:0.12em;border:1px solid var(--amber-dim);
+    padding:3px 8px;border-radius:3px;
+  }
+  h1{font-size:22px;font-weight:800;margin:0;letter-spacing:-0.01em;}
+  .sub{color:var(--muted);font-size:13px;margin-top:4px;font-family:'IBM Plex Mono',monospace;}
+
+  .panel{
+    background:var(--panel);border:1px solid var(--line);border-radius:10px;
+    padding:24px;margin-bottom:24px;
+  }
+  .panel h2{font-size:14px;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin:0 0 16px;font-weight:600;}
+
+  label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px;font-family:'IBM Plex Mono',monospace;}
+  input[type=text], textarea{
+    width:100%;background:var(--panel-2);border:1px solid var(--line);color:var(--text);
+    border-radius:6px;padding:10px 12px;font-family:'Archivo',sans-serif;font-size:14px;
+    margin-bottom:16px;resize:vertical;
+  }
+  textarea{min-height:110px;}
+  input[type=text]:focus, textarea:focus{outline:2px solid var(--amber);outline-offset:1px;border-color:var(--amber);}
+
+  button{
+    background:var(--amber);color:#1A1300;border:none;border-radius:6px;
+    padding:10px 18px;font-weight:600;font-size:13px;cursor:pointer;
+    font-family:'Archivo',sans-serif;
+  }
+  button:hover{filter:brightness(1.08);}
+  button.ghost{background:transparent;color:var(--text);border:1px solid var(--line);}
+  button:disabled{opacity:0.5;cursor:not-allowed;}
+
+  .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;}
+
+  select{
+    background:var(--panel-2);border:1px solid var(--line);color:var(--text);
+    border-radius:6px;padding:10px 12px;font-family:'Archivo',sans-serif;font-size:14px;
+  }
+
+  .dropzone{
+    border:1.5px dashed var(--line);border-radius:8px;padding:24px;text-align:center;
+    color:var(--muted);font-size:13px;cursor:pointer;transition:border-color .15s;
+  }
+  .dropzone.drag{border-color:var(--amber);color:var(--amber);}
+
+  .candidate{
+    display:grid;grid-template-columns:56px 1fr auto;gap:16px;align-items:start;
+    border:1px solid var(--line);border-radius:8px;padding:16px;margin-bottom:12px;
+    background:var(--panel-2);
+  }
+  .score-badge{
+    width:56px;height:56px;border-radius:8px;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;
+    border:1px solid var(--line);
+  }
+  .score-badge .num{font-size:20px;font-weight:600;line-height:1;}
+  .score-badge .of{font-size:9px;color:var(--muted);}
+  .score-good{color:var(--good);border-color:var(--good);}
+  .score-mid{color:var(--mid);border-color:var(--mid);}
+  .score-low{color:var(--low);border-color:var(--low);}
+  .score-pending{color:var(--muted);}
+
+  .cand-name{font-weight:600;font-size:15px;}
+  .cand-file{color:var(--muted);font-size:11px;font-family:'IBM Plex Mono',monospace;margin-bottom:6px;}
+  .justification{font-size:13px;color:#C7CBD6;line-height:1.5;margin:8px 0;}
+  .tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
+  .tag{
+    font-family:'IBM Plex Mono',monospace;font-size:10.5px;padding:3px 8px;border-radius:4px;
+  }
+  .tag.matched{background:rgba(74,222,128,0.12);color:var(--good);border:1px solid rgba(74,222,128,0.3);}
+  .tag.missing{background:rgba(240,101,79,0.1);color:var(--low);border:1px solid rgba(240,101,79,0.28);}
+  .tag.skill{background:var(--panel);color:var(--muted);border:1px solid var(--line);}
+
+  .cand-actions{display:flex;flex-direction:column;gap:8px;align-items:flex-end;}
+  .meta-line{font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:2px;}
+
+  .empty{color:var(--muted);font-size:13px;text-align:center;padding:32px;font-family:'IBM Plex Mono',monospace;}
+  .toast{
+    position:fixed;bottom:24px;right:24px;background:var(--panel-2);border:1px solid var(--line);
+    padding:12px 18px;border-radius:8px;font-size:13px;display:none;max-width:360px;
+  }
+  .toast.err{border-color:var(--low);color:var(--low);}
+  .toast.show{display:block;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <span class="mark">SRS</span>
+      <div>
+        <h1>Smart Resume Screener</h1>
+        <div class="sub">parse &middot; match &middot; shortlist</div>
+      </div>
+    </div>
+  </header>
+
+  <div class="panel" id="job-panel">
+    <h2>1. Job Description</h2>
+    <div class="row" style="align-items:flex-end;">
+      <div style="flex:2;min-width:220px;">
+        <label>Existing job</label>
+        <select id="job-select"><option value="">— select a job —</option></select>
+      </div>
+      <button class="ghost" id="new-job-btn" type="button">+ New job</button>
+      <button class="ghost" id="delete-job-btn" type="button" style="display:none;">Delete job</button>
+    </div>
+
+    <div id="new-job-form" style="display:none;margin-top:16px;border-top:1px solid var(--line);padding-top:16px;">
+      <label for="job-title">Job title</label>
+      <input type="text" id="job-title" placeholder="e.g. Senior Backend Engineer" />
+      <label for="job-desc">Job description</label>
+      <textarea id="job-desc" placeholder="Paste the full job description here..."></textarea>
+      <button id="create-job-btn" type="button">Create job</button>
+    </div>
+  </div>
+
+  <div class="panel" id="upload-panel" style="display:none;">
+    <h2>2. Upload Resumes</h2>
+    <div class="dropzone" id="dropzone">
+      Drop PDF or TXT resumes here, or click to browse
+      <input type="file" id="file-input" multiple accept=".pdf,.txt" style="display:none;">
+    </div>
+    <div class="row" style="margin-top:16px;">
+      <button id="upload-btn" disabled>Upload & Parse</button>
+      <span id="upload-status" class="sub"></span>
+    </div>
+  </div>
+
+  <div class="panel" id="candidates-panel" style="display:none;">
+    <div class="row" style="justify-content:space-between;margin-bottom:16px;">
+      <h2 style="margin:0;">3. Shortlist</h2>
+      <button id="score-all-btn">Score all with Claude</button>
+    </div>
+    <div id="candidates-list"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API = ""; // same-origin
+
+let state = { jobs: [], currentJobId: null };
+
+function toast(msg, isErr=false){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (isErr ? ' err' : '');
+  setTimeout(()=> t.className = 'toast', 3500);
+}
+
+async function api(path, opts={}){
+  const res = await fetch(API + path, opts);
+  if(!res.ok){
+    let msg = res.statusText;
+    try { const j = await res.json(); msg = j.detail || msg; } catch(e){}
+    throw new Error(msg);
+  }
+  return res.status === 204 ? null : res.json();
+}
+
+async function loadJobs(){
+  state.jobs = await api('/jobs');
+  const sel = document.getElementById('job-select');
+  sel.innerHTML = '<option value="">— select a job —</option>' +
+    state.jobs.map(j => `<option value="${j.id}">${j.title}</option>`).join('');
+  if(state.currentJobId) sel.value = state.currentJobId;
+}
+
+document.getElementById('new-job-btn').onclick = () => {
+  document.getElementById('new-job-form').style.display = 'block';
+};
+
+document.getElementById('create-job-btn').onclick = async () => {
+  const title = document.getElementById('job-title').value.trim();
+  const description = document.getElementById('job-desc').value.trim();
+  if(!title || !description){ toast('Title and description are required', true); return; }
+  try{
+    const job = await api('/jobs', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({title, description})
+    });
+    document.getElementById('job-title').value='';
+    document.getElementById('job-desc').value='';
+    document.getElementById('new-job-form').style.display='none';
+    await loadJobs();
+    document.getElementById('job-select').value = job.id;
+    selectJob(job.id);
+  }catch(e){ toast(e.message, true); }
+};
+
+document.getElementById('job-select').onchange = (e) => selectJob(e.target.value ? parseInt(e.target.value) : null);
+
+document.getElementById('delete-job-btn').onclick = async () => {
+  if(!state.currentJobId) return;
+  if(!confirm('Delete this job and all its resumes?')) return;
+  await api('/jobs/' + state.currentJobId, {method:'DELETE'});
+  state.currentJobId = null;
+  await loadJobs();
+  selectJob(null);
+};
+
+function selectJob(jobId){
+  state.currentJobId = jobId;
+  const show = !!jobId;
+  document.getElementById('upload-panel').style.display = show ? 'block' : 'none';
+  document.getElementById('candidates-panel').style.display = show ? 'block' : 'none';
+  document.getElementById('delete-job-btn').style.display = show ? 'inline-block' : 'none';
+  if(show) loadCandidates();
+}
+
+// --- File upload ---
+let pendingFiles = [];
+const dropzone = document.getElementById('dropzone');
+const fileInput = document.getElementById('file-input');
+
+dropzone.onclick = () => fileInput.click();
+dropzone.ondragover = (e) => { e.preventDefault(); dropzone.classList.add('drag'); };
+dropzone.ondragleave = () => dropzone.classList.remove('drag');
+dropzone.ondrop = (e) => {
+  e.preventDefault(); dropzone.classList.remove('drag');
+  setFiles(e.dataTransfer.files);
+};
+fileInput.onchange = () => setFiles(fileInput.files);
+
+function setFiles(fileList){
+  pendingFiles = Array.from(fileList);
+  document.getElementById('upload-btn').disabled = pendingFiles.length === 0;
+  dropzone.textContent = pendingFiles.length
+    ? `${pendingFiles.length} file(s) selected: ${pendingFiles.map(f=>f.name).join(', ')}`
+    : 'Drop PDF or TXT resumes here, or click to browse';
+}
+
+document.getElementById('upload-btn').onclick = async () => {
+  if(!state.currentJobId || pendingFiles.length === 0) return;
+  const btn = document.getElementById('upload-btn');
+  btn.disabled = true;
+  document.getElementById('upload-status').textContent = 'Parsing...';
+  const fd = new FormData();
+  pendingFiles.forEach(f => fd.append('files', f));
+  try{
+    await api(`/jobs/${state.currentJobId}/resumes`, {method:'POST', body: fd});
+    document.getElementById('upload-status').textContent = 'Parsed successfully.';
+    pendingFiles = [];
+    fileInput.value = '';
+    setFiles([]);
+    loadCandidates();
+  }catch(e){
+    document.getElementById('upload-status').textContent = '';
+    toast(e.message, true);
+  }
+  btn.disabled = false;
+};
+
+document.getElementById('score-all-btn').onclick = async () => {
+  if(!state.currentJobId) return;
+  const btn = document.getElementById('score-all-btn');
+  btn.disabled = true; btn.textContent = 'Scoring...';
+  try{
+    await api(`/jobs/${state.currentJobId}/score_all`, {method:'POST'});
+    await loadCandidates();
+  }catch(e){ toast(e.message, true); }
+  btn.disabled = false; btn.textContent = 'Score all with Claude';
+};
+
+function scoreClass(score){
+  if(score === null || score === undefined) return 'score-pending';
+  if(score >= 7) return 'score-good';
+  if(score >= 4) return 'score-mid';
+  return 'score-low';
+}
+
+async function loadCandidates(){
+  const candidates = await api(`/jobs/${state.currentJobId}/candidates`);
+  const list = document.getElementById('candidates-list');
+  if(candidates.length === 0){
+    list.innerHTML = '<div class="empty">No resumes uploaded yet for this job.</div>';
+    return;
+  }
+  list.innerHTML = candidates.map(c => `
+    <div class="candidate">
+      <div class="score-badge ${scoreClass(c.match_score)}">
+        <div class="num">${c.match_score !== null && c.match_score !== undefined ? c.match_score.toFixed(1) : '–'}</div>
+        <div class="of">/ 10</div>
+      </div>
+      <div>
+        <div class="cand-name">${c.candidate_name || c.filename}</div>
+        <div class="cand-file">${c.filename} &middot; ${(c.total_years_experience||0).toFixed(1)} yrs exp &middot; ${(c.education||[]).join(', ') || 'no degree detected'}</div>
+        ${c.justification ? `<div class="justification">${c.justification}</div>` : '<div class="justification" style="color:var(--muted);">Not yet scored.</div>'}
+        <div class="tags">
+          ${(c.matched_skills||[]).map(s=>`<span class="tag matched">✓ ${s}</span>`).join('')}
+          ${(c.missing_skills||[]).map(s=>`<span class="tag missing">✕ ${s}</span>`).join('')}
+        </div>
+        ${!c.matched_skills || c.matched_skills.length===0 ? `<div class="tags">${(c.skills||[]).slice(0,10).map(s=>`<span class="tag skill">${s}</span>`).join('')}</div>` : ''}
+      </div>
+      <div class="cand-actions">
+        <button class="ghost" onclick="scoreOne(${c.id})">${c.match_score !== null && c.match_score !== undefined ? 'Re-score' : 'Score'}</button>
+        <button class="ghost" onclick="deleteResume(${c.id})">Remove</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+async function scoreOne(resumeId){
+  try{
+    await api(`/resumes/${resumeId}/score`, {method:'POST'});
+    loadCandidates();
+  }catch(e){ toast(e.message, true); }
+}
+
+async function deleteResume(resumeId){
+  await api(`/resumes/${resumeId}`, {method:'DELETE'});
+  loadCandidates();
+}
+
+loadJobs();
+</script>
+</body>
+</html>

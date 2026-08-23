@@ -1,0 +1,21 @@
+Priya Sharma
+priya.sharma@email.com | Bengaluru, India
+
+EDUCATION
+B.Tech in Computer Science, IIT Roorkee, 2016-2020
+
+EXPERIENCE
+Backend Engineer, Fintech Labs (2021-Present)
+- Built and maintained REST APIs in Python using FastAPI, serving 2M+ requests/day
+- Migrated core services to Docker + Kubernetes on AWS, cutting deployment time 60%
+- Integrated an LLM-powered fraud-review assistant using the Anthropic API and prompt
+  engineering to summarize flagged transactions for analysts
+- Owned the PostgreSQL schema design for the payments ledger service
+- Set up CI/CD pipelines with GitHub Actions
+
+Software Engineer Intern, DataWorks (2020)
+- Worked on ETL pipelines in Python and SQL
+
+SKILLS
+Python, FastAPI, Django, PostgreSQL, Docker, Kubernetes, AWS, REST API,
+LLM, Prompt Engineering, Git, CI/CD, Agile, Scrum
